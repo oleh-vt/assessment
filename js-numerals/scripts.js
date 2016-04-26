@@ -10,64 +10,47 @@ function buildNumeral(numericText){
 	var numeral = "";
 	
 	var numericValue = parseInt(numericText);
-	var length = numericText.length;
 
 	if(numericValue == 0)
 		return numeral;
 
-	if(length == 1){
-		return ones[numericValue-1];
+	var hundreds = parseInt((numericValue/100));
+
+	if (hundreds > 0) {
+		numeral = ones[hundreds-1] + " hundred";
 	}
-  
-	if (numericValue < 20) {
-		numeral = ones[numericValue-1];
+
+	var tensOnes = numericValue % 100;
+	
+	if(tensOnes == 0)
+		return numeral;
+
+	var tmp = "";
+	if (tensOnes < 20) {
+		tmp += ones[tensOnes-1];
 	}
-	else{//refactor and bugfix needed
-		var tmp = numericText.substring(length-2, length);
-		var onesDigit = parseInt(tmp[1]);
-		var tensDigit = parseInt(tmp[0]);
+	else{
+		var tensDigit = parseInt(tensOnes/10);
+		var onesDigit = tensOnes % 10;
 
 		if (tensDigit > 0)
-			numeral = tens[tensDigit-2];
+			tmp = tens[tensDigit-2];
 
 		if (onesDigit > 0)
-			numeral = numeral + "-" + ones[onesDigit-1];
-
-		if (numericValue > 99) {
-			var hundreds = parseInt(numericText[0]);
-			if (hundreds > 0)
-				numeral = ones[hundreds-1] + " hundred" + " " + numeral;
-		}
+			tmp = tmp + "-" + ones[onesDigit-1];
 	}
+
+	if(tmp.length > 0)
+		numeral += " " + tmp;
 	
 	return numeral;
-
-	// if(n < 20)
-	// 	numeral = ones[n-1];
-	// else{
-	// 	digit = parseInt(numericText[2]);
-	// 	if (digit > 0)
-	// 		numeral = ones[digit-1];
-	// 	digit = parseInt(numericText[1]);
-
-	// 	if (digit > 0)
-	// 		numeral = tens[digit-2] + " " + numeral;
-	// }
-
-	// digit = parseInt(numericText[0]);
-	// if (digit > 0)
-	// 	numeral = ones[digit-1] + " hundred" + " " + numeral;
-  
-  //var n = parseInt(numericText);
-	//document.getElementById("numeral").innerHTML = numeral; //number;
 };
 
 function caller(){
 	var number = document.getElementById("numberInput").value;
-
 	var numberLength = number.length;
-	var threes = numberLength/3 - ((numberLength/3) % 1); //change for parseInt
-	
+
+	var threes = parseInt(numberLength/3);
 	if((numberLength % 3) != 0)
 		threes += 1;
 
