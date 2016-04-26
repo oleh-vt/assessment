@@ -42,11 +42,6 @@ function getHundredsTensOnes(numericText){
 
 function buildPhrase(input){
 	var number = parseInt(input);
-
-	if (number == 0) {
-		return "zero";
-	}
-
 	var isNegativeInput = number < 0;
 
 	if(/^[+-]/.test(input))
