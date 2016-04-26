@@ -4,21 +4,20 @@ var ones = ["zero", "one", "two", "three", "four", "five",
 var tens = ["twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
 var hugeNumbers = ["thousand", "million", "milliard", "billion"];
 
-function buildNumeral(numericText){
-	
-	var phrase = "";
+function getHundredsTensOnes(numericText){
+	var numeral = "";
 	
 	var numericValue = parseInt(numericText);
 	var hundreds = parseInt((numericValue/100));
 
 	if (hundreds > 0) {
-		phrase = ones[hundreds] + " hundred";
+		numeral = ones[hundreds] + " hundred";
 	}
 
 	var tensOnes = numericValue % 100;
 	
 	if(tensOnes == 0)
-		return phrase;
+		return numeral;
 
 	var tmp = "";
 	if (tensOnes < 20) {
@@ -36,9 +35,9 @@ function buildNumeral(numericText){
 	}
 
 	if(tmp.length > 0)
-		phrase += " " + tmp;
+		numeral += " " + tmp;
 	
-	return phrase;
+	return numeral;
 };
 
 function buildPhrase(input){
@@ -68,7 +67,7 @@ function buildPhrase(input){
 			frm = 0;
 
 		var subNumber = input.substring(frm, to);
-		var tmp = buildNumeral(subNumber);
+		var tmp = getHundredsTensOnes(subNumber);
 		if(i > 0 && tmp.length > 0)
 			tmp = tmp + " " + hugeNumbers[i-1];
 
@@ -86,14 +85,14 @@ function numberToText(){
 	var input = document.getElementById("numberInput").value;
 	var result = "";
 
-	if(isNaN(input))
-		result = "Please check you input";
+	if(!/^[+-]?\d+$/.test(input))
+		result = "Please check your input";
 	else{
 		var isLongInput = input.length > maxLength;
 		var isOneSymbolLonger = input.length == (maxLength+1);
 		var isSigned = /^[+-]/.test(input);
 		if(isLongInput && !(isOneSymbolLonger && isSigned)){
-			result = "Ohh, it's too long... I don't even know the name for it. Are such big numbers used anywhere?"
+			result = "Ohh, it's too long... I don't even know the name for it. Are such big numbers really used anywhere?"
 		}
 		else{
 			if(parseInt(input) == 0)
@@ -103,5 +102,5 @@ function numberToText(){
 			}
 		}
 	}
-	document.getElementById("numeral").innerHTML = result;
+	document.getElementById("number").innerHTML = result;
 };
