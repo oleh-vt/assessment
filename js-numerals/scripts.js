@@ -1,33 +1,28 @@
-var ones = ["one", "two", "three", "four", "five", 
+var ones = ["zero", "one", "two", "three", "four", "five", 
 "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "ghirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"];
 
 var tens = ["twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
-
-var numberOrders = ["thousand", "million", "billion", "trillion"];
+var hugeNumbers = ["thousand", "million", "milliard", "billion"];
 
 function buildNumeral(numericText){
 	
-	var numeral = "";
+	var phrase = "";
 	
 	var numericValue = parseInt(numericText);
-
-	if(numericValue == 0)
-		return numeral;
-
 	var hundreds = parseInt((numericValue/100));
 
 	if (hundreds > 0) {
-		numeral = ones[hundreds-1] + " hundred";
+		phrase = ones[hundreds] + " hundred";
 	}
 
 	var tensOnes = numericValue % 100;
 	
 	if(tensOnes == 0)
-		return numeral;
+		return phrase;
 
 	var tmp = "";
 	if (tensOnes < 20) {
-		tmp += ones[tensOnes-1];
+		tmp += ones[tensOnes];
 	}
 	else{
 		var tensDigit = parseInt(tensOnes/10);
@@ -37,25 +32,33 @@ function buildNumeral(numericText){
 			tmp = tens[tensDigit-2];
 
 		if (onesDigit > 0)
-			tmp = tmp + "-" + ones[onesDigit-1];
+			tmp = tmp + "-" + ones[onesDigit];
 	}
 
 	if(tmp.length > 0)
-		numeral += " " + tmp;
+		phrase += " " + tmp;
 	
-	return numeral;
+	return phrase;
 };
 
-function caller(){
-	var number = document.getElementById("numberInput").value;
-	var numberLength = number.length;
+function buildPhrase(input){
+	var number = parseInt(input);
+
+	if (number == 0) {
+		return "zero";
+	}
+
+	var isNegativeInput = number < 0;
+
+	if(/^[+-]/.test(input))
+		input = input.substring(1, input.length);
+	var numberLength = input.length;
 
 	var threes = parseInt(numberLength/3);
 	if((numberLength % 3) != 0)
 		threes += 1;
 
-	var numeral = "";
-
+	var phrase = "";
 	var to = numberLength;
 
 	for(i = 0; i < threes; i++){
@@ -64,14 +67,41 @@ function caller(){
 		if(frm < 0)
 			frm = 0;
 
-		var subNumber = number.substring(frm, to);
+		var subNumber = input.substring(frm, to);
 		var tmp = buildNumeral(subNumber);
 		if(i > 0 && tmp.length > 0)
-			tmp = tmp + " " + numberOrders[i-1];
+			tmp = tmp + " " + hugeNumbers[i-1];
 
-		numeral = tmp + " " + numeral;
+		phrase = tmp + " " + phrase;
 		to -= 3;
 	}
+	if (isNegativeInput) {
+		phrase = "negative " + phrase;
+	}
+	return phrase;
+};
 
-	document.getElementById("numeral").innerHTML = numeral;
+function numberToText(){
+	var maxLength = 15;
+	var input = document.getElementById("numberInput").value;
+	var result = "";
+
+	if(isNaN(input))
+		result = "Please check you input";
+	else{
+		var isLongInput = input.length > maxLength;
+		var isOneSymbolLonger = input.length == (maxLength+1);
+		var isSigned = /^[+-]/.test(input);
+		if(isLongInput && !(isOneSymbolLonger && isSigned)){
+			result = "Ohh, it's too long... I don't even know the name for it. Are such big numbers used anywhere?"
+		}
+		else{
+			if(parseInt(input) == 0)
+				result = ones[0];
+			else{
+				result = buildPhrase(input);
+			}
+		}
+	}
+	document.getElementById("numeral").innerHTML = result;
 };
